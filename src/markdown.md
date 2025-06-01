@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Adventure Game</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-width: 800px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Front page header with image background */
+.header {
+    background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(52, 73, 94, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f39c12" width="1200" height="600"/><circle fill="%23e67e22" cx="200" cy="150" r="80"/><circle fill="%23d35400" cx="400" cy="300" r="60"/><circle fill="%23e74c3c" cx="800" cy="200" r="70"/><circle fill="%23c0392b" cx="1000" cy="400" r="90"/><polygon fill="%23f1c40f" points="600,100 650,200 550,200"/><polygon fill="%23e67e22" points="300,400 350,500 250,500"/><rect fill="%23d35400" x="700" y="350" width="100" height="100" rx="10"/></svg>');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Game pages - simple colors */
+.game-container.game-mode {
+    background: white;
+}
+
+.game-container.game-mode .header {
+    background: #ff9f43;
+    color: #2c2c2c;
+    padding: 25px 30px;
+}
+
+.game-container.game-mode .header h1 {
+    color: #2c2c2c;
+    text-shadow: none;
+    font-size: 2.2rem;
+}
+
+.game-container.game-mode .header p {
+    color: #2c2c2c;
+    opacity: 0.8;
+    text-shadow: none;
+}
+
+.progress-bar {
+    background: rgba(255, 255, 255, 0.3);
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background: white;
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease;
+    border-radius: 4px;
+}
+
+.game-container.game-mode .progress-bar {
+    background: rgba(44, 44, 44, 0.2);
+}
+
+.game-container.game-mode .progress-fill {
+    background: #2c2c2c;
+}
+
+.game-content {
+    padding: 40px;
+    background: white;
+}
+
+.difficulty-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.difficulty-card {
+    background: white;
+    border: 3px solid #e0e0e0;
+    border-radius: 15px;
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.difficulty-card:hover {
+    border-color: #ff9f43;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 159, 67, 0.2);
+}
+
+.difficulty-card.selected {
+    border-color: #ff9f43;
+    background: #ff9f43;
+    color: white;
+}
+
+.difficulty-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.difficulty-card h3 {
+    color: inherit;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.difficulty-card p {
+    color: inherit;
+    opacity: 0.8;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.difficulty-card ul {
+    list-style: none;
+    text-align: left;
+}
+
+.difficulty-card li {
+    padding: 5px 0;
+    opacity: 0.9;
+}
+
+.difficulty-card li:before {
+    content: "✓ ";
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.difficulty-card.selected li:before {
+    color: #2ecc71;
+}
+
+.game-start-screen {
+    text-align: center;
+}
+
+.game-start-screen h2 {
+    color: #2c2c2c;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.game-start-screen p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.start-screen {
+    text-align: center;
+}
+
+.start-screen h2 {
+    color: #2c2c2c;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.start-screen p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.scenario {
+    display: none;
+}
+
+.scenario.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.scenario-image {
+    width: 100%;
+    height: 200px;
+    background: #ff9f43;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+    border: 3px solid #2c2c2c;
+}
+
+.scenario h3 {
+    color: #2c2c2c;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.scenario p {
+    color: #555;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.choices {
+    display: grid;
+    gap: 15px;
+}
+
+.choice-btn {
+    background: #ff9f43;
+    color: white;
+    border: 2px solid #2c2c2c;
+    padding: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.choice-btn:hover {
+    background: #2c2c2c;
+    border-color: #ff9f43;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 44, 44, 0.2);
+}
+
+.choice-btn:active {
+    transform: translateY(0);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 25px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px solid #ff9f43;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c2c2c;
+}
+
+.result-screen {
+    display: none;
+    text-align: center;
+}
+
+.result-screen.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+.career-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+.career-title {
+    font-size: 2.5rem;
+    color: #2c2c2c;
+    margin-bottom: 15px;
+}
+
+.career-description {
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.restart-btn {
+    background: #ff9f43;
+    color: white;
+    border: 2px solid #2c2c2c;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.restart-btn:hover {
+    background: #2c2c2c;
+    border-color: #ff9f43;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 44, 44, 0.2);
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .game-content {
+        padding: 20px;
+    }
+    
+    .choice-btn {
+        padding: 15px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🚀 Career Adventure</h1>
+            <p>Shape your future through the choices you make!</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="game-content">
+            <!-- Difficulty Selection Screen -->
+            <div class="start-screen" id="startScreen">
+                <h2>Choose Your Adventure Level</h2>
+                <p>Select the complexity level that matches your experience and interest in career exploration.</p>
+                <div class="difficulty-selection">
+                    <div class="difficulty-card" onclick="selectDifficulty('easy')">
+                        <div class="difficulty-icon">🌱</div>
+                        <h3>Easy Mode</h3>
+                        <p>Simple career paths with clear choices. Perfect for beginners exploring basic career options.</p>
+                        <ul>
+                            <li>3 scenarios</li>
+                            <li>3 choices per scenario</li>
+                            <li>6 career outcomes</li>
+                        </ul>
+                    </div>
+                    <div class="difficulty-card" onclick="selectDifficulty('medium')">
+                        <div class="difficulty-icon">⚡</div>
+                        <h3>Medium Mode</h3>
+                        <p>Balanced complexity with diverse career paths. Great for exploring various industries.</p>
+                        <ul>
+                            <li>4 scenarios</li>
+                            <li>4 choices per scenario</li>
+                            <li>8 career outcomes</li>
+                        </ul>
+                    </div>
+                    <div class="difficulty-card" onclick="selectDifficulty('hard')">
+                        <div class="difficulty-icon">🔥</div>
+                        <h3>Hard Mode</h3>
+                        <p>Complex scenarios with nuanced choices. For those seeking realistic career challenges.</p>
+                        <ul>
+                            <li>6 scenarios</li>
+                            <li>5 choices per scenario</li>
+                            <li>12 career outcomes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Start Screen -->
+            <div class="game-start-screen" id="gameStartScreen" style="display: none;">
+                <h2>Ready to Begin Your Career Journey!</h2>
+                <p id="difficultyDescription">You've selected your adventure level. Every choice you make will shape your career path!</p>
+                <button class="choice-btn" onclick="startGame()">🎯 Start Your Journey</button>
+            </div>
+
+            <!-- Dynamic Scenarios Container -->
+            <div id="scenariosContainer"></div>
+
+            <!-- Stats Display -->
+            <div class="stats" id="statsDisplay" style="display: none;">
+                <div class="stat">
+                    <div class="stat-label">Technical Skills</div>
+                    <div class="stat-value" id="techSkills">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Creativity</div>
+                    <div class="stat-value" id="creativity">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Leadership</div>
+                    <div class="stat-value" id="leadership">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Business Acumen</div>
+                    <div class="stat-value" id="business">0</div>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div class="result-screen" id="resultScreen">
+                <div class="career-icon" id="careerIcon">🎉</div>
+                <h2 class="career-title" id="careerTitle">Your Career Path</h2>
+                <p class="career-description" id="careerDescription">Based on your choices...</p>
+                <button class="restart-btn" onclick="restartGame()">🔄 Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = 0;
+        let selectedDifficulty = '';
+        let totalScenarios = 0;
+        let playerStats = {
+            technical: 0,
+            creativity: 0,
+            leadership: 0,
+            business: 0,
+            communication: 0,
+            analytical: 0
+        };
+
+        // Scenario data for different difficulties
+        const scenarioData = {
+            easy: {
+                scenarios: [
+                    {
+                        icon: '🎓',
+                        title: 'Education Choice',
+                        description: 'You\'re choosing your educational path. What interests you most?',
+                        choices: [
+                            { text: '💻 Learn Computer Programming', stats: { technical: 4 } },
+                            { text: '🎨 Study Art and Design', stats: { creativity: 4 } },
+                            { text: '💼 Business and Management', stats: { business: 4 } }
+                        ]
+                    },
+                    {
+                        icon: '🌟',
+                        title: 'First Job',
+                        description: 'You\'re looking for your first job. Which opportunity excites you?',
+                        choices: [
+                            { text: '🏢 Join a big tech company', stats: { technical: 3, business: 1 } },
+                            { text: '🎭 Work at a creative agency', stats: { creativity: 3, communication: 1 } },
+                            { text: '🚀 Start your own business', stats: { business: 3, leadership: 1 } }
+                        ]
+                    },
+                    {
+                        icon: '🎯',
+                        title: 'Career Focus',
+                        description: 'What do you want to specialize in?',
+                        choices: [
+                            { text: '⚙️ Technical Development', stats: { technical: 4 } },
+                            { text: '🎨 Creative Design', stats: { creativity: 4 } },
+                            { text: '📊 Business Strategy', stats: { business: 4 } }
+                        ]
+                    }
+                ]
+            },
+            medium: {
+                scenarios: [
+                    {
+                        icon: '🎓',
+                        title: 'High School Graduation',
+                        description: 'Congratulations! You\'ve just graduated high school. What\'s your next step?',
+                        choices: [
+                            { text: '📚 University for Computer Science', stats: { technical: 3, analytical: 1 } },
+                            { text: '🎨 Art School', stats: { creativity: 3, technical: 1 } },
+                            { text: '💼 Business Degree', stats: { business: 3, leadership: 1 } },
+                            { text: '🔧 Trade School', stats: { technical: 2, business: 2 } }
+                        ]
+                    },
+                    {
+                        icon: '💻',
+                        title: 'Skill Development',
+                        description: 'How do you spend your free time building additional skills?',
+                        choices: [
+                            { text: '⌨️ Practice coding projects', stats: { technical: 3 } },
+                            { text: '🤝 Network professionally', stats: { business: 2, communication: 2 } },
+                            { text: '🎭 Develop creative skills', stats: { creativity: 3 } },
+                            { text: '👥 Take leadership roles', stats: { leadership: 3 } }
+                        ]
+                    },
+                    {
+                        icon: '🌟',
+                        title: 'First Opportunity',
+                        description: 'An exciting opportunity presents itself! Which aligns with your goals?',
+                        choices: [
+                            { text: '🏢 Tech company internship', stats: { technical: 2, business: 1 } },
+                            { text: '🚀 Join a startup', stats: { technical: 1, business: 2, leadership: 1 } },
+                            { text: '💰 Start freelancing', stats: { creativity: 2, business: 2 } },
+                            { text: '🔬 Research position', stats: { technical: 3, analytical: 1 } }
+                        ]
+                    },
+                    {
+                        icon: '🎯',
+                        title: 'Specialization',
+                        description: 'Time to choose your specialization. What excites you most?',
+                        choices: [
+                            { text: '🤖 AI & Machine Learning', stats: { technical: 3, analytical: 1 } },
+                            { text: '🎨 UX Design', stats: { creativity: 3, technical: 1 } },
+                            { text: '📊 Project Management', stats: { leadership: 3, business: 1 } },
+                            { text: '💡 Entrepreneurship', stats: { business: 2, creativity: 1, leadership: 1 } }
+                        ]
+                    }
+                ]
+            },
+            hard: {
+                scenarios: [
+                    {
+                        icon: '🎓',
+                        title: 'Educational Foundation',
+                        description: 'You\'re planning your educational journey. Consider the long-term implications.',
+                        choices: [
+                            { text: '🏛️ Prestigious university with high debt', stats: { technical: 2, business: 2, analytical: 1 } },
+                            { text: '🏫 State school with scholarships', stats: { technical: 3, business: 1 } },
+                            { text: '💻 Self-taught with online courses', stats: { technical: 4, creativity: 1 } },
+                            { text: '🎨 Art institute with portfolio focus', stats: { creativity: 4, communication: 1 } },
+                            { text: '⚡ Coding bootcamp intensive', stats: { technical: 5 } }
+                        ]
+                    },
+                    {
+                        icon: '🌐',
+                        title: 'Global Perspective',
+                        description: 'How do you gain international experience and perspective?',
+                        choices: [
+                            { text: '✈️ Study abroad program', stats: { communication: 3, creativity: 2 } },
+                            { text: '🌍 Remote work for global company', stats: { technical: 2, communication: 2, business: 1 } },
+                            { text: '🤝 International internship', stats: { business: 3, communication: 2 } },
+                            { text: '📚 Focus on local market expertise', stats: { analytical: 3, business: 2 } },
+                            { text: '🚀 Start globally-minded startup', stats: { business: 2, leadership: 2, creativity: 1 } }
+                        ]
+                    },
+                    {
+                        icon: '⚖️',
+                        title: 'Ethical Dilemma',
+                        description: 'Your company asks you to work on a project with questionable ethics. How do you respond?',
+                        choices: [
+                            { text: '🛡️ Refuse and risk your position', stats: { leadership: 4, communication: 1 } },
+                            { text: '💬 Negotiate alternative approach', stats: { communication: 3, business: 2 } },
+                            { text: '📊 Analyze and present data on risks', stats: { analytical: 4, technical: 1 } },
+                            { text: '🎯 Complete task but document concerns', stats: { business: 3, analytical: 2 } },
+                            { text: '🚪 Leave for a more ethical company', stats: { leadership: 3, creativity: 2 } }
+                        ]
+                    },
+                    {
+                        icon: '📈',
+                        title: 'Market Disruption',
+                        description: 'Your industry is being disrupted by new technology. How do you adapt?',
+                        choices: [
+                            { text: '🔬 Deep dive into emerging tech', stats: { technical: 4, analytical: 2 } },
+                            { text: '🎨 Pivot to creative applications', stats: { creativity: 4, technical: 1 } },
+                            { text: '👥 Lead organizational change', stats: { leadership: 4, business: 2 } },
+                            { text: '🌐 Build strategic partnerships', stats: { business: 3, communication: 3 } },
+                            { text: '💡 Create innovative solutions', stats: { creativity: 3, technical: 2, business: 1 } }
+                        ]
+                    },
+                    {
+                        icon: '🎯',
+                        title: 'Leadership Challenge',
+                        description: 'You\'re promoted to lead a struggling team. What\'s your strategy?',
+                        choices: [
+                            { text: '📊 Analyze performance data first', stats: { analytical: 3, leadership: 2 } },
+                            { text: '💬 Focus on team communication', stats: { communication: 4, leadership: 2 } },
+                            { text: '🔄 Restructure processes', stats: { business: 3, leadership: 3 } },
+                            { text: '🎨 Inspire with creative vision', stats: { creativity: 3, leadership: 3 } },
+                            { text: '⚡ Implement technical solutions', stats: { technical: 3, leadership: 2, analytical: 1 } }
+                        ]
+                    },
+                    {
+                        icon: '🚀',
+                        title: 'Future Vision',
+                        description: 'You\'re shaping the future of your field. What\'s your ultimate contribution?',
+                        choices: [
+                            { text: '🤖 Pioneer AI advancement', stats: { technical: 4, analytical: 3 } },
+                            { text: '🌍 Create sustainable solutions', stats: { creativity: 3, business: 2, leadership: 2 } },
+                            { text: '👥 Build inclusive organizations', stats: { leadership: 4, communication: 3 } },
+                            { text: '💡 Innovate business models', stats: { business: 4, creativity: 2, analytical: 1 } },
+                            { text: '🎨 Redefine user experiences', stats: { creativity: 4, technical: 2, communication: 1 } }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Enhanced career outcomes for different difficulties
+        const careers = {
+            easy: {
+                'programmer': { icon: '👨‍💻', title: 'Programmer', description: 'You build software and applications that people use every day!' },
+                'designer': { icon: '🎨', title: 'Designer', description: 'You create beautiful and functional designs that inspire others!' },
+                'business_person': { icon: '💼', title: 'Business Professional', description: 'You help organizations grow and succeed in the marketplace!' },
+                'tech_creative': { icon: '🎭', title: 'Tech Creative', description: 'You blend technology and creativity to build amazing experiences!' },
+                'entrepreneur': { icon: '🚀', title: 'Entrepreneur', description: 'You start and run your own successful business!' },
+                'consultant': { icon: '📊', title: 'Consultant', description: 'You help other businesses solve their biggest challenges!' }
+            },
+            medium: {
+                'software_engineer': { icon: '👨‍💻', title: 'Software Engineer', description: 'You build complex software systems that power modern technology!' },
+                'ux_designer': { icon: '🎨', title: 'UX/UI Designer', description: 'You create user-friendly experiences that delight millions of users!' },
+                'product_manager': { icon: '📊', title: 'Product Manager', description: 'You guide product development and coordinate teams to build amazing products!' },
+                'entrepreneur': { icon: '🚀', title: 'Tech Entrepreneur', description: 'You start innovative companies that change industries!' },
+                'ai_researcher': { icon: '🤖', title: 'AI Researcher', description: 'You advance artificial intelligence and machine learning!' },
+                'creative_director': { icon: '🎭', title: 'Creative Director', description: 'You lead creative teams and bring innovative ideas to life!' },
+                'data_scientist': { icon: '📈', title: 'Data Scientist', description: 'You extract insights from data to drive business decisions!' },
+                'tech_consultant': { icon: '🔧', title: 'Technology Consultant', description: 'You help organizations implement and optimize technology solutions!' }
+            },
+            hard: {
+                'cto': { icon: '👑', title: 'Chief Technology Officer', description: 'You lead technology strategy for major organizations and shape the future of tech!' },
+                'ai_ethics_researcher': { icon: '🤖', title: 'AI Ethics Researcher', description: 'You ensure AI development is responsible and beneficial for humanity!' },
+                'venture_capitalist': { icon: '💰', title: 'Venture Capitalist', description: 'You identify and fund the next generation of breakthrough companies!' },
+                'innovation_director': { icon: '💡', title: 'Innovation Director', description: 'You drive organizational transformation and breakthrough innovations!' },
+                'global_consultant': { icon: '🌍', title: 'Global Strategy Consultant', description: 'You advise multinational corporations on complex strategic challenges!' },
+                'social_entrepreneur': { icon: '🌱', title: 'Social Entrepreneur', description: 'You build businesses that solve major social and environmental problems!' },
+                'research_scientist': { icon: '🔬', title: 'Research Scientist', description: 'You conduct groundbreaking research that advances human knowledge!' },
+                'digital_transformation_leader': { icon: '⚡', title: 'Digital Transformation Leader', description: 'You help organizations navigate the digital revolution!' },
+                'sustainable_tech_innovator': { icon: '🌿', title: 'Sustainable Tech Innovator', description: 'You develop technologies that create a more sustainable future!' },
+                'cybersecurity_architect': { icon: '🛡️', title: 'Cybersecurity Architect', description: 'You protect organizations from sophisticated cyber threats!' },
+                'quantum_computing_specialist': { icon: '⚛️', title: 'Quantum Computing Specialist', description: 'You work on the cutting edge of quantum technology!' },
+                'biotech_entrepreneur': { icon: '🧬', title: 'Biotech Entrepreneur', description: 'You combine technology and biology to revolutionize healthcare!' }
+            }
+        };
+
+        function selectDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            totalScenarios = scenarioData[difficulty].scenarios.length;
+            
+            // Update UI
+            document.querySelectorAll('.difficulty-card').forEach(card => card.classList.remove('selected'));
+            event.target.closest('.difficulty-card').classList.add('selected');
+            
+            // Add game-mode class to change styling
+            document.querySelector('.game-container').classList.add('game-mode');
+            
+            // Show game start screen
+            setTimeout(() => {
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('gameStartScreen').style.display = 'block';
+                
+                const descriptions = {
+                    easy: 'Easy mode selected! You\'ll face straightforward career decisions with clear paths.',
+                    medium: 'Medium mode selected! You\'ll navigate balanced career challenges with diverse options.',
+                    hard: 'Hard mode selected! You\'ll tackle complex scenarios with nuanced career implications.'
+                };
+                document.getElementById('difficultyDescription').textContent = descriptions[difficulty];
+            }, 300);
+        }
+
+        function startGame() {
+            document.getElementById('gameStartScreen').style.display = 'none';
+            document.getElementById('statsDisplay').style.display = 'grid';
+            
+            // Update stats display for difficulty
+            updateStatsDisplay();
+            showScenario(0);
+            updateProgress();
+        }
+
+        function showScenario(scenarioIndex) {
+            const scenario = scenarioData[selectedDifficulty].scenarios[scenarioIndex];
+            if (!scenario) return;
+            
+            const container = document.getElementById('scenariosContainer');
+            container.innerHTML = `
+                <div class="scenario active">
+                    <div class="scenario-image">${scenario.icon}</div>
+                    <h3>${scenario.title}</h3>
+                    <p>${scenario.description}</p>
+                    <div class="choices">
+                        ${scenario.choices.map((choice, index) => 
+                            `<button class="choice-btn" onclick="makeChoice(${scenarioIndex}, ${index})">${choice.text}</button>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+            
+            currentScenario = scenarioIndex;
+        }
+
+        function makeChoice(scenarioIndex, choiceIndex) {
+            const choice = scenarioData[selectedDifficulty].scenarios[scenarioIndex].choices[choiceIndex];
+            
+            // Update stats
+            Object.keys(choice.stats).forEach(stat => {
+                playerStats[stat] += choice.stats[stat];
+            });
+            
+            updateStatsDisplay();
+            
+            // Move to next scenario or show results
+            if (currentScenario < totalScenarios - 1) {
+                setTimeout(() => {
+                    showScenario(currentScenario + 1);
+                    updateProgress();
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    showResults();
+                }, 500);
+            }
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('techSkills').textContent = playerStats.technical;
+            document.getElementById('creativity').textContent = playerStats.creativity;
+            document.getElementById('leadership').textContent = playerStats.leadership;
+            document.getElementById('business').textContent = playerStats.business;
+            
+            // Show additional stats for medium and hard mode
+            if (selectedDifficulty !== 'easy') {
+                const statsContainer = document.getElementById('statsDisplay');
+                if (!document.getElementById('communication')) {
+                    statsContainer.innerHTML += `
+                        <div class="stat">
+                            <div class="stat-label">Communication</div>
+                            <div class="stat-value" id="communication">${playerStats.communication}</div>
+                        </div>
+                    `;
+                }
+                if (selectedDifficulty === 'hard' && !document.getElementById('analytical')) {
+                    statsContainer.innerHTML += `
+                        <div class="stat">
+                            <div class="stat-label">Analytical</div>
+                            <div class="stat-value" id="analytical">${playerStats.analytical}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Update existing stats
+            if (document.getElementById('communication')) {
+                document.getElementById('communication').textContent = playerStats.communication;
+            }
+            if (document.getElementById('analytical')) {
+                document.getElementById('analytical').textContent = playerStats.analytical;
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentScenario + 1) / totalScenarios) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('scenariosContainer').innerHTML = '';
+            document.getElementById('statsDisplay').style.display = 'none';
+            
+            // Determine career based on stats and difficulty
+            const careerKey = determineCareer();
+            const career = careers[selectedDifficulty][careerKey];
+            
+            document.getElementById('careerIcon').textContent = career.icon;
+            document.getElementById('careerTitle').textContent = career.title;
+            document.getElementById('careerDescription').textContent = career.description;
+            
+            document.getElementById('resultScreen').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function determineCareer() {
+            const stats = playerStats;
+            const maxStat = Math.max(...Object.values(stats));
+            
+            if (selectedDifficulty === 'easy') {
+                if (stats.technical === maxStat) return 'programmer';
+                if (stats.creativity === maxStat) return 'designer';
+                if (stats.business === maxStat) return 'business_person';
+                if (stats.technical >= 4 && stats.creativity >= 4) return 'tech_creative';
+                if (stats.business >= 6) return 'entrepreneur';
+                return 'consultant';
+            }
+            
+            if (selectedDifficulty === 'medium') {
+                if (stats.technical >= 8) return 'ai_researcher';
+                if (stats.creativity >= 6 && stats.leadership >= 4) return 'creative_director';
+                if (stats.creativity >= 6) return 'ux_designer';
+                if (stats.leadership >= 6) return 'product_manager';
+                if (stats.business >= 6 && stats.technical >= 4) return 'entrepreneur';
+                if (stats.analytical >= 4) return 'data_scientist';
+                if (stats.technical >= 5) return 'software_engineer';
+                return 'tech_consultant';
+            }
+            
+            // Hard mode - more complex logic
+            if (stats.leadership >= 10 && stats.technical >= 8) return 'cto';
+            if (stats.technical >= 10 && stats.analytical >= 8) return 'ai_ethics_researcher';
+            if (stats.business >= 10 && stats.analytical >= 6) return 'venture_capitalist';
+            if (stats.creativity >= 8 && stats.business >= 8) return 'innovation_director';
+            if (stats.communication >= 8 && stats.business >= 8) return 'global_consultant';
+            if (stats.creativity >= 6 && stats.leadership >= 6) return 'social_entrepreneur';
+            if (stats.technical >= 8 && stats.analytical >= 10) return 'research_scientist';
+            if (stats.leadership >= 8 && stats.technical >= 6) return 'digital_transformation_leader';
+            if (stats.creativity >= 6 && stats.technical >= 6) return 'sustainable_tech_innovator';
+            if (stats.technical >= 10 && stats.analytical >= 6) return 'cybersecurity_architect';
+            if (stats.technical >= 12) return 'quantum_computing_specialist';
+            return 'biotech_entrepreneur';
+        }
+
+        function restartGame() {
+            currentScenario = 0;
+            selectedDifficulty = '';
+            playerStats = { technical: 0, creativity: 0, leadership: 0, business: 0, communication: 0, analytical: 0 };
+            
+            // Remove game-mode class to return to front page styling
+            document.querySelector('.game-container').classList.remove('game-mode');
+            
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameStartScreen').style.display = 'none';
+            document.getElementById('statsDisplay').style.display = 'none';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('scenariosContainer').innerHTML = '';
+            
+            // Reset stats display
+            document.getElementById('statsDisplay').innerHTML = `
+                <div class="stat">
+                    <div class="stat-label">Technical Skills</div>
+                    <div class="stat-value" id="techSkills">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Creativity</div>
+                    <div class="stat-value" id="creativity">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Leadership</div>
+                    <div class="stat-value" id="leadership">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Business Acumen</div>
+                    <div class="stat-value" id="business">0</div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        updateStatsDisplay();
+    </script>
+</body>
+</html>
